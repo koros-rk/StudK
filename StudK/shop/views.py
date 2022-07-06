@@ -31,21 +31,31 @@ class ProductViewSet(viewsets.ModelViewSet):
             show=True
         )
 
+        for photo in data['photos']:
+            photo_obj = Photos.objects.create(url=photo)
+            new_product.photos.add(photo_obj)
+
         for style in data['styles']:
-            style_obj = Style.objects.get(title=style['title'])
+            style_obj = Style.objects.get(title=style)
             new_product.styles.add(style_obj)
 
         for material in data['materials']:
-            material_obj = Material.objects.get(title=material['title'])
+            material_obj = Material.objects.get(title=material)
             new_product.materials.add(material_obj)
 
         for color in data['colors']:
-            color_obj = Colour.objects.get(title=color['title'])
+            color_obj = Colour.objects.get(title=color)
             new_product.colours.add(color_obj)
 
-        for photo in data['photos']:
-            photo_obj = Photos.objects.create(url=photo['url'])
-            new_product.photos.add(photo_obj)
+        for facade in data['facades']:
+            facade_obj = Facade.objects.get(title=facade['title'], thumbnail=facade['thumbnail'],
+                                            main_photo=facade['main_photo'])
+            new_product.facades.add(facade_obj)
+
+        for slab in data['slabs']:
+            slab_obj = Slab.objects.get(title=slab['title'], thumbnail=slab['thumbnail'],
+                                        main_photo=slab['main_photo'])
+            new_product.slabs.add(slab_obj)
 
         serializer = ProductSerializer(new_product)
 
@@ -65,21 +75,34 @@ class ProductViewSet(viewsets.ModelViewSet):
         if data.get('styles'):
             instance.styles.clear()
             for style in data['styles']:
-                new_style = Style.objects.create(title=style["title"])
+                new_style = Style.objects.get(title=style)
                 instance.styles.add(new_style)
 
         if data.get('materials'):
             instance.materials.clear()
             for material in data['materials']:
-                new_material = Material.objects.create(title=material["title"])
+                new_material = Material.objects.get(title=material)
                 instance.materials.add(new_material)
 
-        if data.get('colours'):
+        if data.get('colors'):
             instance.colours.clear()
-            for color in data['colours']:
-                new_color = Colour.objects.create(title=color["title"])
+            for color in data['colors']:
+                new_color = Colour.objects.get(title=color)
                 instance.colours.add(new_color)
 
-        instance.save()
+        if data.get('facades'):
+            instance.facades.clear()
+            for facade in data['facades']:
+                new_facade = Facade.objects.get(title=facade['title'], thumbnail=facade['thumbnail'],
+                                                main_photo=facade['main_photo'])
+                instance.facades.add(new_facade)
 
+        if data.get('slabs'):
+            instance.slabs.clear()
+            for slab in data['slabs']:
+                new_slab = Slab.objects.get(title=slab['title'], thumbnail=slab['thumbnail'],
+                                            main_photo=slab['main_photo'])
+                instance.slabs.add(new_slab)
+
+        instance.save()
         return Response(data)
