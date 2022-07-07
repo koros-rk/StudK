@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include
 from shop.views import ProductViewSet
-from shop.utils import sets
+from shop.utils import sets, Messaging
 from .yasg import urlpatterns as doc_urls
 from rest_framework import routers
 
@@ -12,7 +12,9 @@ for title, VSet in sets:
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/v1/', include(router.urls))
+    path('api/v1/auth', include('rest_framework.urls')),
+    path('api/v1/', include(router.urls)),
+    path('api/v1/message', Messaging.as_view())
 ]
 
 urlpatterns += doc_urls

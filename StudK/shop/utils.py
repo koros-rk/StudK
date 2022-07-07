@@ -1,7 +1,12 @@
 from rest_framework import viewsets
-from .models import Style, Material, Colour, Handle, Facade, Slab
-from .serializers import StyleSerializer, MaterialSerializer, ColourSerializer, HandleSerializer, FacadeSerializer, SlabSerializer
+from rest_framework.renderers import JSONRenderer
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from .models import Product, Style, Material, Colour, Handle, Facade, Slab
+from .serializers import StyleSerializer, MaterialSerializer, ColourSerializer, HandleSerializer, FacadeSerializer, \
+    SlabSerializer, CurrentUserSerializer
 from .permissions import ReadOnly, IsAdminUser
+from .messaging import send_telegram
 
 
 class StylesViewSet(viewsets.ModelViewSet):
@@ -56,6 +61,21 @@ class SlabsViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = Slab.objects.all()
         return queryset
+
+
+class Messaging(APIView):
+    renderer_classes = [JSONRenderer]
+
+    def post(self, request, format=None):
+        userProduct = Product.objects.get(id=1)
+        message = "Name: {0}\n" \
+                  "Surname: {1}\n" \
+                  "email: {2}\n" \
+                  "Product: {3}\n" \
+                  "url: {4}".format(request.user.first_name, request.user.last_name, request.user.email,
+                                    userProduct, "http://127.0.0.1:8000/api/v1/products/" + str(userProduct.id) + "/")
+        send_telegram(message)
+        return Response(message)
 
 
 sets = [("styles", StylesViewSet), ("materials", MaterialsViewSet), ("colors", ColoursViewSet),

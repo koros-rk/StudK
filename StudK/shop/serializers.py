@@ -1,5 +1,7 @@
 from abc import ABC
 from rest_framework import serializers
+from django.contrib.auth.models import User
+
 from .models import *
 
 
@@ -49,6 +51,12 @@ class SlabSerializer(serializers.ModelSerializer):
         fields = ('title', 'thumbnail', 'main_photo')
 
 
+class CurrentUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'id')
+
+
 class ProductSerializer(serializers.ModelSerializer):
     photos = PhotoListingField(many=True, read_only=True)
     styles = TagListingField(many=True, read_only=True)
@@ -60,5 +68,5 @@ class ProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ('title', 'description_shorted', 'description_full', 'main_photo', 'photos', 'styles', 'materials',
-                  'colours', 'facades', 'slabs', 'handle', 'show', 'time_created', 'time_updated', )
+        fields = ('id', 'title', 'description_shorted', 'description_full', 'main_photo', 'photos', 'styles',
+                  'materials', 'colours', 'facades', 'slabs', 'handle', 'show', )
