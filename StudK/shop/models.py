@@ -74,3 +74,4 @@ class Product(models.Model):
 
     def __str__(self):
         return "Title: {0}".format(self.title)
+

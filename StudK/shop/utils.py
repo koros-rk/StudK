@@ -4,7 +4,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import Product, Style, Material, Colour, Handle, Facade, Slab
 from .serializers import StyleSerializer, MaterialSerializer, ColourSerializer, HandleSerializer, FacadeSerializer, \
-    SlabSerializer, CurrentUserSerializer
+    SlabSerializer
+from cart.models import Cart
 from .permissions import ReadOnly, IsAdminUser
 from .messaging import send_telegram
 
@@ -68,12 +69,17 @@ class Messaging(APIView):
 
     def post(self, request, format=None):
         userProduct = Product.objects.get(id=1)
+        userCart = Cart.objects.filter(user=request.user)
         message = "Name: {0}\n" \
                   "Surname: {1}\n" \
                   "email: {2}\n" \
-                  "Product: {3}\n" \
-                  "url: {4}".format(request.user.first_name, request.user.last_name, request.user.email,
-                                    userProduct, "http://127.0.0.1:8000/api/v1/products/" + str(userProduct.id) + "/")
+                  "Products: \n".format(request.user.first_name, request.user.last_name, request.user.email)
+
+        for item in userCart:
+            message += "{0}\n" \
+                      "url: {1}\n" \
+                       "----------\n".format(item.product, "http://127.0.0.1:8000/api/v1/products/" + str(item.product.id))
+
         send_telegram(message)
         return Response(message)
 
