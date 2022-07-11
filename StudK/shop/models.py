@@ -73,4 +73,5 @@ class Product(models.Model):
     show = models.BooleanField(default=True)
 
     def __str__(self):
-        return self.title
+        return "Title: {0}".format(self.title)
+
